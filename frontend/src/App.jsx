@@ -1,28 +1,23 @@
-import React from 'react'
-import SignUpPage from './pages/Authentication/SignUpPage'
-import LogInPage from './pages/Authentication/LogInPage.jsx'
-import { Routes, Route } from 'react-router'
-import toast from 'react-hot-toast'
-
-
+import React from 'react';
+import SignUpPage from './pages/Authentication/SignUpPage';
+import LogInPage from './pages/Authentication/LogInPage.jsx';
+import { Routes, Route, useLocation } from 'react-router';
+import { AnimatePresence } from 'framer-motion';
+import toast from 'react-hot-toast';
 
 const App = () => {
-
-  
+  const location = useLocation();
 
   return (
     <div>
-
-      <Routes>
-
-      <Route path="/" element={<LogInPage/>}></Route>
-      
-      <Route path="/signup" element={<SignUpPage/>}></Route>
-
-      </Routes>
-
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          <Route path="/login" element={<LogInPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
+        </Routes>
+      </AnimatePresence>
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;
