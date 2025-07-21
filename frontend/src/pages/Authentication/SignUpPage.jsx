@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Link } from 'react-router';
 import '@fontsource/space-grotesk'; // Ensure it's installed
 import { motion } from 'framer-motion';
+import axios from 'axios';
+import api from '../../lib/axios';
+
 
 const pageVariants = {
   initial: { opacity: 0, scale: 0.95 },
@@ -26,7 +29,7 @@ const SignUpPage = () => {
     fullname: '',
     username: '',
     password: '',
-    confirmPassword: '',
+    confirmpassword: '',
     role: '',
   });
 
@@ -35,10 +38,22 @@ const SignUpPage = () => {
     setFormdata((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Signup form data:', formdata);
-  };
+  
+   const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await api.post('/api/auth/signup', formdata) 
+      withCredentials: true, // IMPORTANT if you are using cookies
+    
+    console.log("Signup successful:", res.data);
+
+    // Optional: Redirect or show message
+    // navigate("/login");
+  } catch (error) {
+    console.error("Signup error:", error.response?.data?.error || error.message);
+  }
+};
+
 
   return (
     <motion.div
@@ -64,7 +79,7 @@ const SignUpPage = () => {
             { name: 'fullname', placeholder: 'Full Name' },
             { name: 'username', placeholder: 'Username' },
             { name: 'password', placeholder: 'Password', type: 'password' },
-            { name: 'confirmPassword', placeholder: 'Confirm Password', type: 'password' },
+            { name: 'confirmpassword', placeholder: 'Confirm Password', type: 'password' },
           ].map((field) => (
             <input
               key={field.name}
@@ -89,12 +104,33 @@ const SignUpPage = () => {
           </select>
         </div>
 
-        <button
-          type="submit"
-          className="mt-2 bg-[#1e1e1e] hover:bg-[#333] text-white py-2 rounded-md text-sm font-semibold shadow-lg transition"
-        >
-          Sign Up
-        </button>
+  <button
+  type="submit"
+  className="
+    mt-4
+    bg-gradient-to-r from-gray-700 via-gray-800 to-gray-900
+    text-white
+    py-3
+    rounded-md
+    font-semibold
+    shadow-lg
+    hover:from-gray-600 hover:to-gray-800
+    hover:scale-105
+    active:scale-95
+    active:shadow-inner
+    transition
+    duration-200
+    ease-in-out
+    focus:outline-none
+    focus:ring-2
+    focus:ring-gray-600
+    focus:ring-opacity-50
+  "
+>
+  Sign Up
+</button>
+
+
 
         <p className="text-sm text-center text-gray-600 mt-2">
           Already have an account?
