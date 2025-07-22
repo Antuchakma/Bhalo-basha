@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import '@fontsource/space-grotesk';
 import { motion } from 'framer-motion';
 import api from '../../lib/axios';
 import toast, { Toaster } from 'react-hot-toast';
+import { Route } from 'react-router';
+import { Navigate } from 'react-router';
 
 const pageVariants = {
   initial: { opacity: 0, scale: 0.95 },
@@ -23,6 +25,10 @@ const pageVariants = {
 };
 
 const LogInPage = () => {
+
+  const navigate = useNavigate();
+
+
   const [formdata, setFormadata] = useState({
     username: '',
     password: '',
@@ -38,7 +44,9 @@ const LogInPage = () => {
    try {
     const res = await api.post('/api/auth/login',formdata)
     withCredentials: true,
+
     toast.success("Login SuccessFull");
+    navigate('/homepage');
    } catch (error) {
     toast.error("wrong username or password");
    }
