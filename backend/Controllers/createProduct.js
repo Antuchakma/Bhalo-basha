@@ -1,3 +1,8 @@
+import Product from "../models/product.model.js";  // adjust path if needed
+
+
+
+
 export const createProduct = async (req, res) => {
   try {
     const newProduct = new Product(req.body);
