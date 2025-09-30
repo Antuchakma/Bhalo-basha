@@ -1,10 +1,28 @@
 import { useContext, useState } from "react";
 import { AuthContext } from "../../../context/AuthContext.jsx";
 import { Link } from "react-router";
+import api from "../../lib/axios";
+import { useNavigate } from "react-router";
+
+
 
 const HomePage = () => {
   const { user } = useContext(AuthContext);
   const [navOpen, setNavOpen] = useState(false);
+
+
+  const { setUser } = useContext(AuthContext);
+const navigate = useNavigate();
+
+const handleLogout = async () => {
+  try {
+    await api.post("/api/auth/logout", {}, { withCredentials: true });
+    setUser(null); // clear user from context
+    navigate("/"); // go back to homepage
+  } catch (error) {
+    console.error("Logout failed:", error.response?.data || error.message);
+  }
+};
 
   return (
     <div className="min-h-screen font-[Space Grotesk] bg-gray-100">
@@ -40,12 +58,12 @@ const HomePage = () => {
                     >
                       View Profile
                     </Link>
-                    <Link
-                      to="/logout"
+                    <button
+                      onClick={handleLogout}  
                       className="block mt-1 text-red-600 hover:underline"
                     >
                       Logout
-                    </Link>
+                    </button>
                   </div>
                 )}
               </div>

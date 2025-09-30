@@ -48,12 +48,14 @@ const handleSubmit = async (e) => {
   try {
     const res = await api.post("/api/auth/login", formdata, { withCredentials: true });
     toast.success("Login Successful");
-    setUser(res.data.user); // save user in context
+    setUser(res.data); // <-- FIX: use res.data directly
     navigate("/");
   } catch (error) {
-    toast.error("Wrong username or password");
+    console.error("Login error:", error.response?.data || error.message);
+    toast.error(error.response?.data?.error || "Wrong username or password");
   }
 };
+
 
 
   return (
