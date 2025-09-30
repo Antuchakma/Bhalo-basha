@@ -3,23 +3,24 @@ import SignUpPage from './pages/Authentication/SignUpPage';
 import LogInPage from './pages/Authentication/LogInPage.jsx';
 import { Routes, Route, useLocation } from 'react-router';
 import { AnimatePresence } from 'framer-motion';
-import toast from 'react-hot-toast';
 import HomePage from './pages/contentPages/HomePage.jsx';
+import { AuthProvider } from '../context/AuthContext.jsx'; 
 
 const App = () => {
   const location = useLocation();
 
   return (
-    <div>
+    <AuthProvider> 
       <AnimatePresence mode="wait">
+        <div>
         <Routes location={location} key={location.pathname}>
-          <Route path='/' element={<HomePage/>}/>
+          <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LogInPage />} />
           <Route path="/signup" element={<SignUpPage />} />
-          <Route path='/homepage' element={<HomePage/>}/>
         </Routes>
+        </div>
       </AnimatePresence>
-    </div>
+    </AuthProvider>
   );
 };
 

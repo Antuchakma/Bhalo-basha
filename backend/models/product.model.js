@@ -13,7 +13,6 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-    
   contractDuration: {
     type: Number,
     required: true, 
@@ -26,6 +25,12 @@ const productSchema = new mongoose.Schema({
     images: {   
     type: [String], // Array of image URLs
     default: [],
+  },
+
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
   },
   
 },

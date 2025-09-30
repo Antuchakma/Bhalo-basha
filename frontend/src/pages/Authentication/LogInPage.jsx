@@ -6,6 +6,8 @@ import api from '../../lib/axios';
 import toast, { Toaster } from 'react-hot-toast';
 import { Route } from 'react-router';
 import { Navigate } from 'react-router';
+import { AuthContext } from '../../../context/AuthContext.jsx';
+import { useContext } from 'react';
 
 const pageVariants = {
   initial: { opacity: 0, scale: 0.95 },
@@ -39,18 +41,20 @@ const LogInPage = () => {
     setFormadata((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
-   e.preventDefault();
-   try {
-    const res = await api.post('/api/auth/login',formdata)
-    withCredentials: true,
+ const { setUser } = useContext(AuthContext);
 
-    toast.success("Login SuccessFull");
-    navigate('/homepage');
-   } catch (error) {
-    toast.error("wrong username or password");
-   }
-  };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await api.post("/api/auth/login", formdata, { withCredentials: true });
+    toast.success("Login Successful");
+    setUser(res.data.user); // save user in context
+    navigate("/");
+  } catch (error) {
+    toast.error("Wrong username or password");
+  }
+};
+
 
   return (
     <motion.div
