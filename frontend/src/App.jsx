@@ -5,6 +5,7 @@ import { Routes, Route, useLocation } from 'react-router';
 import { AnimatePresence } from 'framer-motion';
 import HomePage from './pages/contentPages/HomePage.jsx';
 import { AuthProvider } from '../context/AuthContext.jsx'; 
+import  ListingsPage  from './pages/contentPages/ListingsPage.jsx';
 
 const App = () => {
   const location = useLocation();
@@ -17,6 +18,8 @@ const App = () => {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LogInPage />} />
           <Route path="/signup" element={<SignUpPage />} />
+          
+          <Route path="/listings" element={<ListingsPage />} />
         </Routes>
         </div>
       </AnimatePresence>
