@@ -94,16 +94,17 @@ function ListingsPage() {
                       View Profile
                     </Link>
                   </li>
-                  {user.role === "owner" && (
-                    <li>
-                      <Link
-                        to="/add-listing"
-                        className="block px-2 py-1 text-sm font-medium text-gray-800 hover:text-teal-700 transition-colors"
-                      >
-                        Add Listing
-                      </Link>
-                    </li>
-                  )}
+
+                  {/* Add Listing visible for all logged-in users */}
+                  <li>
+                    <Link
+                      to="/add-listing"
+                      className="block px-2 py-1 text-sm font-medium text-gray-800 hover:text-teal-700 transition-colors"
+                    >
+                      Add Listing
+                    </Link>
+                  </li>
+
                   <li>
                     <button
                       onClick={handleLogout}
@@ -163,15 +164,13 @@ function ListingsPage() {
               <span className="font-semibold text-teal-900">
                 {user.username} ({user.role})
               </span>
-              {user.role === "owner" && (
-                <Link
-                  to="/add-listing"
-                  className="text-base font-medium text-teal-900 hover:text-teal-700 transition"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  Add Listing
-                </Link>
-              )}
+              <Link
+                to="/add-listing"
+                className="text-base font-medium text-teal-900 hover:text-teal-700 transition"
+                onClick={() => setMobileOpen(false)}
+              >
+                Add Listing
+              </Link>
               <button
                 onClick={() => {
                   handleLogout();
@@ -202,9 +201,24 @@ function ListingsPage() {
           transition={{ duration: 0.6 }}
           className="max-w-6xl mx-auto"
         >
-          <h1 className="text-4xl sm:text-5xl font-bold text-center text-teal-900 mb-10">
-            Available <span className="text-teal-600">Listings</span>
-          </h1>
+          {/* Header with Add Listing Button */}
+          <div className="flex justify-between items-center mb-10">
+            <h1 className="text-4xl sm:text-5xl font-bold text-teal-900">
+              Available <span className="text-teal-600">Listings</span>
+            </h1>
+
+            {/* Add Listing button for all logged-in users */}
+            {user && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate("/add-listing")}
+                className="px-6 py-3 bg-teal-900 text-white font-semibold rounded-full shadow-md hover:bg-teal-800 transition-all"
+              >
+                + Add Listing
+              </motion.button>
+            )}
+          </div>
 
           {loading && (
             <div className="text-center mt-10 text-gray-600 text-lg">
