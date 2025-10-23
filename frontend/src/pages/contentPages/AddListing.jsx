@@ -19,22 +19,39 @@ function AddListing() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // 🖼️ Handle image selection
+  const handleImageChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      images: Array.from(e.target.files), // Store multiple selected images
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const data = new FormData();
+    data.append("title", formData.title);
+    data.append("description", formData.description);
+    data.append("rent", formData.rent);
+    data.append("contractDuration", formData.contractDuration);
+    data.append("location", formData.location);
+
+    // Append all selected images
+    for (let i = 0; i < formData.images.length; i++) {
+      data.append("images", formData.images[i]);
+    }
+
     try {
-      const res = await axios.post(
-        "http://localhost:5002/api/product",
-        formData,
-        {
-          withCredentials: true, // ✅ allows cookies to be sent
-        }
-      );
+      const res = await axios.post("http://localhost:5002/api/product", data, {
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       alert("Listing added successfully!");
       navigate("/listings");
     } catch (error) {
-      console.error("Error creating listing:", error.response?.data || error);
+      console.error("Error creating listing:", error);
       alert("Failed to create listing");
     }
   };
@@ -45,7 +62,7 @@ function AddListing() {
         <h2 className="text-2xl font-bold text-center text-teal-900 mb-6">
           Add New Listing
         </h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
           <input
             type="text"
             name="title"
@@ -90,6 +107,18 @@ function AddListing() {
             className="w-full input input-bordered"
             required
           />
+
+          {/* 🖼️ Image upload field */}
+          <input
+            type="file"
+            name="images"
+            accept="image/*"
+            multiple
+            onChange={handleImageChange}
+            className="w-full file-input file-input-bordered"
+            required
+          />
+
           <button
             type="submit"
             className="w-full py-3 bg-teal-900 text-white rounded-lg font-semibold hover:bg-teal-800 transition"

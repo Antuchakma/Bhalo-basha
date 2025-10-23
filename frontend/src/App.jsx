@@ -7,6 +7,8 @@ import HomePage from './pages/contentPages/HomePage.jsx';
 import { AuthProvider } from '../context/AuthContext.jsx'; 
 import ListingsPage from './pages/contentPages/ListingsPage.jsx';
 import AddListing from './pages/contentPages/AddListing.jsx'; // ✅ import new page
+import ProductPage from "./pages/contentPages/ProductPage.jsx";
+
 
 const App = () => {
   const location = useLocation();
@@ -21,6 +23,8 @@ const App = () => {
             <Route path="/signup" element={<SignUpPage />} />
             <Route path="/listings" element={<ListingsPage />} />
             <Route path="/add-listing" element={<AddListing />} />
+            <Route path="/listing/:id" element={<ProductPage />} />
+
           </Routes>
         </div>
       </AnimatePresence>

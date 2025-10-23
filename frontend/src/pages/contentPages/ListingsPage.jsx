@@ -95,7 +95,6 @@ function ListingsPage() {
                     </Link>
                   </li>
 
-                  {/* Add Listing visible for all logged-in users */}
                   <li>
                     <Link
                       to="/add-listing"
@@ -207,7 +206,6 @@ function ListingsPage() {
               Available <span className="text-teal-600">Listings</span>
             </h1>
 
-            {/* Add Listing button for all logged-in users */}
             {user && (
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -240,36 +238,40 @@ function ListingsPage() {
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                   {products.map((product) => (
-                    <motion.div
+                    <Link
                       key={product._id}
-                      whileHover={{ scale: 1.02 }}
-                      className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow overflow-hidden border border-gray-100"
+                      to={`/listing/${product._id}`} // <-- clickable
                     >
-                      <img
-                        src={product.images?.[0] || "/placeholder.jpg"}
-                        alt={product.title}
-                        className="w-full h-56 object-cover"
-                      />
-                      <div className="p-5">
-                        <h2 className="text-xl font-semibold text-gray-800">
-                          {product.title}
-                        </h2>
-                        <p className="text-gray-500 text-sm mb-2">
-                          {product.location}
-                        </p>
-                        <p className="text-gray-600 line-clamp-2 text-sm mb-3">
-                          {product.description}
-                        </p>
-                        <div className="flex justify-between items-center mt-3">
-                          <p className="text-teal-700 font-bold">
-                            {product.rent} ৳ /month
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow overflow-hidden border border-gray-100"
+                      >
+                        <img
+                          src={product.images?.[0] || "/placeholder.jpg"}
+                          alt={product.title}
+                          className="w-full h-56 object-cover"
+                        />
+                        <div className="p-5">
+                          <h2 className="text-xl font-semibold text-gray-800">
+                            {product.title}
+                          </h2>
+                          <p className="text-gray-500 text-sm mb-2">
+                            {product.location}
                           </p>
-                          <p className="text-xs text-gray-400">
-                            {product.contractDuration} mo contract
+                          <p className="text-gray-600 line-clamp-2 text-sm mb-3">
+                            {product.description}
                           </p>
+                          <div className="flex justify-between items-center mt-3">
+                            <p className="text-teal-700 font-bold">
+                              {product.rent} ৳ /month
+                            </p>
+                            <p className="text-xs text-gray-400">
+                              {product.contractDuration} mo contract
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </motion.div>
+                      </motion.div>
+                    </Link>
                   ))}
                 </div>
               )}
