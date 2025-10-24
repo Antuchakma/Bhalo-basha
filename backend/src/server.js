@@ -2,6 +2,7 @@ import express from "express"
 import { connectDB } from "../config/db.js";
 import authRoutes from "../routes/auth.Routes.js"
 import productRoutes from "../routes/product.Route.js"
+import messageRoutes from "../routes/message.Routes.js"
 import cookieParser from "cookie-parser";
 
 import dotenv from "dotenv";
@@ -18,8 +19,9 @@ app.use(cors({
     credentials: true
 }))
 app.use("/uploads", express.static("uploads"));
-app.use("/api/auth",authRoutes);
-app.use("/api/product",productRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/product", productRoutes);
+app.use("/api/messages", messageRoutes);
 
 app.get("/",(req,res)=>
     {

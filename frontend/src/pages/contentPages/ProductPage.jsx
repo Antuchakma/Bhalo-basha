@@ -1,14 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router";
 import axios from "axios";
 import { motion } from "framer-motion";
-import { ArrowLeft, MapPin, Clock, DollarSign, Bed, Bath, Check, HomeIcon, Phone, MapPinOff } from "lucide-react";
+import { ArrowLeft, MapPin, Clock, DollarSign, Bed, Bath, Check, HomeIcon, Phone, MapPinOff, MessageSquare } from "lucide-react";
+import { AuthContext } from "../../../context/AuthContext";
+import Chat from "../../components/Chat";
 
 function ProductPage() {
   const { id } = useParams(); // Get product ID from URL
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showChat, setShowChat] = useState(false);
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -180,7 +184,7 @@ function ProductPage() {
               </div>
 
               {/* Contact Information */}
-              <div className="bg-teal-50 p-4 rounded-lg space-y-3">
+                <div className="bg-teal-50 p-4 rounded-lg space-y-3">
                 <h3 className="text-lg font-semibold text-teal-900">Contact Information</h3>
                 <div className="flex items-center space-x-2 text-gray-700">
                   <Phone className="w-5 h-5 text-teal-700" />
@@ -188,7 +192,26 @@ function ProductPage() {
                     {product.contactPhone}
                   </a>
                 </div>
+                {user && user.id !== product.user._id && (
+                  <button
+                    onClick={() => setShowChat(true)}
+                    className="flex items-center space-x-2 text-teal-700 hover:text-teal-800 transition-colors"
+                  >
+                    <MessageSquare className="w-5 h-5" />
+                    <span>Send Message</span>
+                  </button>
+                )}
               </div>
+
+              {/* Chat Window */}
+              {showChat && (
+                <Chat
+                  listingId={product._id}
+                  receiverId={product.user._id}
+                  receiverName={product.user.username}
+                  onClose={() => setShowChat(false)}
+                />
+              )}
             </div>
           </div>
         </div>

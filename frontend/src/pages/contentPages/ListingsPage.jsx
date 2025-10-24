@@ -4,12 +4,14 @@ import { Link, useNavigate } from "react-router";
 import { AuthContext } from "../../../context/AuthContext.jsx";
 import Footer from "../../lib/Footer.jsx";
 import { UserCircle, Menu, X } from "lucide-react";
+import ListingChatBot from "../../components/ListingChatBot";
 import { motion } from "framer-motion";
 import "@fontsource/space-grotesk";
 
 const navLinks = [
   { name: "Home", path: "/" },
   { name: "Listings", path: "/listings" },
+  { name: "Messages", path: "/messages" },
   { name: "About", path: "/about" },
 ];
 
@@ -55,34 +57,45 @@ function ListingsPage() {
     }));
   };
 
-  const applyFilters = () => {
+  const applyFilters = (chatbotFilters = null) => {
     let filtered = [...products];
+    const activeFilters = chatbotFilters || filters;
 
-    if (filters.location) {
-      filtered = filtered.filter(product => product.location === filters.location);
+    if (activeFilters.location) {
+      filtered = filtered.filter(product => product.location === activeFilters.location);
     }
 
-    if (filters.propertyType) {
-      filtered = filtered.filter(product => product.propertyType === filters.propertyType);
+    if (activeFilters.propertyType) {
+      filtered = filtered.filter(product => product.propertyType === activeFilters.propertyType);
     }
 
-    if (filters.minRent) {
-      filtered = filtered.filter(product => product.rent >= Number(filters.minRent));
+    if (activeFilters.minRent) {
+      filtered = filtered.filter(product => product.rent >= Number(activeFilters.minRent));
     }
 
-    if (filters.maxRent) {
-      filtered = filtered.filter(product => product.rent <= Number(filters.maxRent));
+    if (activeFilters.maxRent) {
+      filtered = filtered.filter(product => product.rent <= Number(activeFilters.maxRent));
     }
 
-    if (filters.bedrooms) {
-      filtered = filtered.filter(product => product.bedrooms === Number(filters.bedrooms));
+    if (activeFilters.bedrooms) {
+      filtered = filtered.filter(product => {
+        if (activeFilters.bedrooms === "4+") {
+          return product.bedrooms >= 4;
+        }
+        return product.bedrooms === Number(activeFilters.bedrooms);
+      });
     }
 
-    if (filters.furnished) {
-      filtered = filtered.filter(product => product.furnished === (filters.furnished === 'true'));
+    if (activeFilters.furnished) {
+      filtered = filtered.filter(product => product.furnished === (activeFilters.furnished === 'true'));
     }
 
     setFilteredProducts(filtered);
+    
+    if (chatbotFilters) {
+      setFilters(chatbotFilters);
+      setShowFilters(true);
+    }
   };
 
   const resetFilters = () => {
@@ -458,6 +471,9 @@ function ListingsPage() {
       </div>
 
       <Footer />
+      
+      {/* Chatbot */}
+      <ListingChatBot onFilterChange={applyFilters} />
     </div>
   );
 }
