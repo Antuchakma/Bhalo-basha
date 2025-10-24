@@ -16,11 +16,86 @@ const navLinks = [
 function ListingsPage() {
   const { user, setUser } = useContext(AuthContext);
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [filters, setFilters] = useState({
+    location: '',
+    propertyType: '',
+    minRent: '',
+    maxRent: '',
+    bedrooms: '',
+    furnished: '',
+  });
+  const [showFilters, setShowFilters] = useState(false);
+
+  const locationOptions = [
+    'KUET Campus',
+    'Fulbarigate',
+    'Boyra',
+    'Khulna City',
+    'Daulatpur',
+    'Sonadanga',
+    'Khalishpur',
+    'New Market',
+    'Gollamari',
+    'Other'
+  ];
+
+  const propertyTypes = ['Apartment', 'House', 'Room', 'Hostel'];
   const navigate = useNavigate();
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const applyFilters = () => {
+    let filtered = [...products];
+
+    if (filters.location) {
+      filtered = filtered.filter(product => product.location === filters.location);
+    }
+
+    if (filters.propertyType) {
+      filtered = filtered.filter(product => product.propertyType === filters.propertyType);
+    }
+
+    if (filters.minRent) {
+      filtered = filtered.filter(product => product.rent >= Number(filters.minRent));
+    }
+
+    if (filters.maxRent) {
+      filtered = filtered.filter(product => product.rent <= Number(filters.maxRent));
+    }
+
+    if (filters.bedrooms) {
+      filtered = filtered.filter(product => product.bedrooms === Number(filters.bedrooms));
+    }
+
+    if (filters.furnished) {
+      filtered = filtered.filter(product => product.furnished === (filters.furnished === 'true'));
+    }
+
+    setFilteredProducts(filtered);
+  };
+
+  const resetFilters = () => {
+    setFilters({
+      location: '',
+      propertyType: '',
+      minRent: '',
+      maxRent: '',
+      bedrooms: '',
+      furnished: '',
+    });
+    setFilteredProducts(products);
+  };
 
   const handleLogout = async () => {
     try {
@@ -37,6 +112,7 @@ function ListingsPage() {
       try {
         const res = await axios.get("http://localhost:5002/api/product/");
         setProducts(res.data.products);
+        setFilteredProducts(res.data.products);
       } catch (err) {
         console.error("Error fetching products:", err);
         setError("Failed to load listings.");
@@ -46,6 +122,10 @@ function ListingsPage() {
     };
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    applyFilters();
+  }, [filters]);
 
   return (
     <div className="w-screen min-h-screen bg-base-100 text-base-content font-[Space Grotesk] overflow-x-hidden">
@@ -201,21 +281,113 @@ function ListingsPage() {
           className="max-w-6xl mx-auto"
         >
           {/* Header with Add Listing Button */}
-          <div className="flex justify-between items-center mb-10">
-            <h1 className="text-4xl sm:text-5xl font-bold text-teal-900">
-              Available <span className="text-teal-600">Listings</span>
-            </h1>
+          <div className="space-y-6 mb-10">
+            <div className="flex justify-between items-center">
+              <h1 className="text-4xl sm:text-5xl font-bold text-teal-900">
+                Available <span className="text-teal-600">Listings</span>
+              </h1>
 
-            {user && (
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => navigate("/add-listing")}
-                className="px-6 py-3 bg-teal-900 text-white font-semibold rounded-full shadow-md hover:bg-teal-800 transition-all"
-              >
-                + Add Listing
-              </motion.button>
-            )}
+              {user && (
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => navigate("/add-listing")}
+                  className="px-6 py-3 bg-teal-900 text-white font-semibold rounded-full shadow-md hover:bg-teal-800 transition-all"
+                >
+                  + Add Listing
+                </motion.button>
+              )}
+            </div>
+
+            <div className="bg-white p-6 rounded-xl shadow-md">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold text-teal-900">Filters</h2>
+                <button 
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="text-teal-600 hover:text-teal-700"
+                >
+                  {showFilters ? 'Hide Filters' : 'Show Filters'}
+                </button>
+              </div>
+
+              {showFilters && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <select
+                      name="location"
+                      value={filters.location}
+                      onChange={handleFilterChange}
+                      className="select select-bordered w-full"
+                    >
+                      <option value="">Select Location</option>
+                      {locationOptions.map(loc => (
+                        <option key={loc} value={loc}>{loc}</option>
+                      ))}
+                    </select>
+
+                    <select
+                      name="propertyType"
+                      value={filters.propertyType}
+                      onChange={handleFilterChange}
+                      className="select select-bordered w-full"
+                    >
+                      <option value="">Property Type</option>
+                      {propertyTypes.map(type => (
+                        <option key={type} value={type}>{type}</option>
+                      ))}
+                    </select>
+
+                    <div className="flex gap-2">
+                      <input
+                        type="number"
+                        name="minRent"
+                        placeholder="Min Rent"
+                        value={filters.minRent}
+                        onChange={handleFilterChange}
+                        className="input input-bordered w-full"
+                      />
+                      <input
+                        type="number"
+                        name="maxRent"
+                        placeholder="Max Rent"
+                        value={filters.maxRent}
+                        onChange={handleFilterChange}
+                        className="input input-bordered w-full"
+                      />
+                    </div>
+
+                    <input
+                      type="number"
+                      name="bedrooms"
+                      placeholder="Bedrooms"
+                      value={filters.bedrooms}
+                      onChange={handleFilterChange}
+                      className="input input-bordered w-full"
+                    />
+
+                    <select
+                      name="furnished"
+                      value={filters.furnished}
+                      onChange={handleFilterChange}
+                      className="select select-bordered w-full"
+                    >
+                      <option value="">Furnished Status</option>
+                      <option value="true">Furnished</option>
+                      <option value="false">Unfurnished</option>
+                    </select>
+                  </div>
+
+                  <div className="flex justify-end gap-2">
+                    <button
+                      onClick={resetFilters}
+                      className="px-4 py-2 text-teal-600 hover:text-teal-700 font-medium"
+                    >
+                      Reset Filters
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {loading && (
@@ -237,7 +409,7 @@ function ListingsPage() {
                 </p>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                  {products.map((product) => (
+                  {filteredProducts.map((product) => (
                     <Link
                       key={product._id}
                       to={`/listing/${product._id}`} // <-- clickable
@@ -255,9 +427,14 @@ function ListingsPage() {
                           <h2 className="text-xl font-semibold text-gray-800">
                             {product.title}
                           </h2>
-                          <p className="text-gray-500 text-sm mb-2">
-                            {product.location}
-                          </p>
+                            <div className="flex justify-between items-start">
+                              <p className="text-gray-500 text-sm">
+                                {product.location}
+                              </p>
+                              <p className="text-xs text-teal-600">
+                                Posted by {product.user?.username}
+                              </p>
+                            </div>
                           <p className="text-gray-600 line-clamp-2 text-sm mb-3">
                             {product.description}
                           </p>

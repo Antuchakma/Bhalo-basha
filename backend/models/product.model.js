@@ -21,12 +21,57 @@ const productSchema = new mongoose.Schema({
   location: {  
     type: String,
     required: true,
-  },    
-    images: {   
+    enum: [
+      'KUET Campus',
+      'Fulbarigate',
+      'Boyra',
+      'Khulna City',
+      'Daulatpur',
+      'Sonadanga',
+      'Khalishpur',
+      'New Market',
+      'Gollamari',
+      'Other'
+    ]
+  },
+  specificAddress: {
+    type: String,
+    required: true,
+  },
+  propertyType: {
+    type: String,
+    required: true,
+    enum: ['Apartment', 'House', 'Room', 'Hostel'],
+  },
+  bedrooms: {
+    type: Number,
+    required: true,
+  },
+  bathrooms: {
+    type: Number,
+    required: true,
+  },
+  furnished: {
+    type: Boolean,
+    default: false,
+  },
+  amenities: {
+    type: [String],
+    default: [],
+  },
+  contactPhone: {
+    type: String,
+    required: true,
+  },
+  advancePayment: {
+    type: Number, // Number of months of advance payment required
+    required: true,
+    min: 0,
+  },
+  images: {   
     type: [String], // Array of image URLs
     default: [],
   },
-
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

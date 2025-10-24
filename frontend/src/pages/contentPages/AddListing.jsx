@@ -9,8 +9,43 @@ function AddListing() {
     rent: "",
     contractDuration: "",
     location: "",
+    specificAddress: "",
+    propertyType: "",
+    bedrooms: "",
+    bathrooms: "",
+    furnished: false,
+    amenities: [],
+    contactPhone: "",
+    advancePayment: "",
     images: [],
   });
+
+  const locationOptions = [
+    'KUET Campus',
+    'Fulbarigate',
+    'Boyra',
+    'Khulna City',
+    'Daulatpur',
+    'Sonadanga',
+    'Khalishpur',
+    'New Market',
+    'Gollamari',
+    'Other'
+  ];
+
+  const propertyTypes = ['Apartment', 'House', 'Room', 'Hostel'];
+
+  const amenityOptions = [
+    'WiFi',
+    'Air Conditioning',
+    'Generator',
+    'Water Supply',
+    'Security Guard',
+    'CCTV',
+    'Parking',
+    'Gas Connection',
+    'Elevator'
+  ];
 
   const navigate = useNavigate();
 
@@ -36,6 +71,14 @@ function AddListing() {
     data.append("rent", formData.rent);
     data.append("contractDuration", formData.contractDuration);
     data.append("location", formData.location);
+    data.append("specificAddress", formData.specificAddress);
+    data.append("propertyType", formData.propertyType);
+    data.append("bedrooms", formData.bedrooms);
+    data.append("bathrooms", formData.bathrooms);
+    data.append("furnished", formData.furnished);
+    data.append("amenities", JSON.stringify(formData.amenities));
+    data.append("contactPhone", formData.contactPhone);
+    data.append("advancePayment", formData.advancePayment);
 
     // Append all selected images
     for (let i = 0; i < formData.images.length; i++) {
@@ -80,15 +123,26 @@ function AddListing() {
             className="w-full textarea textarea-bordered"
             required
           />
-          <input
-            type="number"
-            name="rent"
-            placeholder="Rent (৳)"
-            value={formData.rent}
-            onChange={handleChange}
-            className="w-full input input-bordered"
-            required
-          />
+          <div className="grid grid-cols-2 gap-4">
+            <input
+              type="number"
+              name="rent"
+              placeholder="Rent (৳)"
+              value={formData.rent}
+              onChange={handleChange}
+              className="input input-bordered"
+              required
+            />
+            <input
+              type="number"
+              name="advancePayment"
+              placeholder="Advance Payment (months)"
+              value={formData.advancePayment}
+              onChange={handleChange}
+              className="input input-bordered"
+              required
+            />
+          </div>
           <input
             type="number"
             name="contractDuration"
@@ -98,11 +152,104 @@ function AddListing() {
             className="w-full input input-bordered"
             required
           />
-          <input
-            type="text"
+          
+          <select
             name="location"
-            placeholder="Location"
             value={formData.location}
+            onChange={handleChange}
+            className="w-full select select-bordered"
+            required
+          >
+            <option value="">Select Location</option>
+            {locationOptions.map((loc) => (
+              <option key={loc} value={loc}>{loc}</option>
+            ))}
+          </select>
+
+          <textarea
+            name="specificAddress"
+            placeholder="Specific Address (House no., Road no., etc.)"
+            value={formData.specificAddress}
+            onChange={handleChange}
+            className="w-full textarea textarea-bordered"
+            required
+          />
+
+          <select
+            name="propertyType"
+            value={formData.propertyType}
+            onChange={handleChange}
+            className="w-full select select-bordered"
+            required
+          >
+            <option value="">Select Property Type</option>
+            {propertyTypes.map((type) => (
+              <option key={type} value={type}>{type}</option>
+            ))}
+          </select>
+
+          <div className="grid grid-cols-2 gap-4">
+            <input
+              type="number"
+              name="bedrooms"
+              placeholder="Bedrooms"
+              value={formData.bedrooms}
+              onChange={handleChange}
+              className="input input-bordered"
+              required
+            />
+            <input
+              type="number"
+              name="bathrooms"
+              placeholder="Bathrooms"
+              value={formData.bathrooms}
+              onChange={handleChange}
+              className="input input-bordered"
+              required
+            />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              name="furnished"
+              checked={formData.furnished}
+              onChange={(e) => setFormData(prev => ({ ...prev, furnished: e.target.checked }))}
+              className="checkbox"
+            />
+            <label>Furnished</label>
+          </div>
+
+          <div className="space-y-2">
+            <label className="block">Amenities</label>
+            <div className="grid grid-cols-2 gap-2">
+              {amenityOptions.map((amenity) => (
+                <label key={amenity} className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={formData.amenities.includes(amenity)}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+                      setFormData(prev => ({
+                        ...prev,
+                        amenities: checked 
+                          ? [...prev.amenities, amenity]
+                          : prev.amenities.filter(a => a !== amenity)
+                      }));
+                    }}
+                    className="checkbox checkbox-sm"
+                  />
+                  {amenity}
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <input
+            type="tel"
+            name="contactPhone"
+            placeholder="Contact Phone"
+            value={formData.contactPhone}
             onChange={handleChange}
             className="w-full input input-bordered"
             required
