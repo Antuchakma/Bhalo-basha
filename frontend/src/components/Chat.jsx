@@ -134,8 +134,8 @@ function Chat({ listingId, receiverId, receiverName, onClose, position = 'fixed'
       className={`${
         position === 'fixed' 
           ? 'fixed bottom-4 right-4 w-96 h-[500px]' 
-          : 'flex flex-col h-full'
-      } bg-white rounded-lg shadow-xl`}
+          : 'h-full'
+      } bg-white rounded-lg shadow-xl flex flex-col`}
     >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b bg-teal-600 text-white rounded-t-lg">
@@ -151,7 +151,7 @@ function Chat({ listingId, receiverId, receiverName, onClose, position = 'fixed'
       {/* Messages */}
       <div
         ref={chatContainerRef}
-        className="flex-1 overflow-y-auto p-4 space-y-4"
+        className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0"
       >
         {error ? (
           <div className="text-center text-red-500">{error}</div>

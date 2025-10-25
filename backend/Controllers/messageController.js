@@ -20,21 +20,50 @@ async function getConversations(req, res) {
     // Group messages by listing and other user
     const conversationsMap = new Map();
 
-    messages.forEach(message => {
-      const otherUser = message.sender._id.toString() === userId ? message.receiver : message.sender;
+    const validMessages = messages.filter(message => 
+      message.listing && message.sender && message.receiver &&
+      message.sender.username && message.receiver.username && message.listing.title
+    );
+
+    validMessages.forEach(message => {
+      const senderIsCurrentUser = message.sender._id.toString() === userId;
+      const otherUser = senderIsCurrentUser ? message.receiver : message.sender;
       const listingId = message.listing._id.toString();
       const key = `${listingId}-${otherUser._id}`;
 
       if (!conversationsMap.has(key)) {
         conversationsMap.set(key, {
           _id: key,
-          listing: message.listing,
-          otherUser,
-          lastMessage: message,
+          listing: {
+            _id: message.listing._id,
+            title: message.listing.title
+          },
+          otherUser: {
+            _id: otherUser._id,
+            username: otherUser.username
+          },
+          lastMessage: {
+            _id: message._id,
+            content: message.content,
+            createdAt: message.createdAt
+          },
           unreadCount: message.receiver._id.toString() === userId && !message.read ? 1 : 0
         });
-      } else if (message.receiver._id.toString() === userId && !message.read) {
-        conversationsMap.get(key).unreadCount += 1;
+      } else {
+        // Update last message if this one is more recent
+        const existing = conversationsMap.get(key);
+        if (new Date(message.createdAt) > new Date(existing.lastMessage.createdAt)) {
+          existing.lastMessage = {
+            _id: message._id,
+            content: message.content,
+            createdAt: message.createdAt
+          };
+        }
+
+        // Update unread count only if message is unread and user is receiver
+        if (message.receiver._id.toString() === userId && !message.read) {
+          existing.unreadCount += 1;
+        }
       }
     });
 
@@ -80,6 +109,13 @@ async function getMessages(req, res) {
     const { userId, listingId } = req.params;
     const currentUserId = req.user.id;
 
+    // First, verify that the listing exists
+    const listing = await Product.findById(listingId);
+    if (!listing) {
+      return res.status(404).json({ error: "Listing not found" });
+    }
+
+    // Get messages between the two users for this listing
     const messages = await Message.find({
       listing: listingId,
       $or: [
@@ -89,7 +125,13 @@ async function getMessages(req, res) {
     })
       .populate("sender", "username")
       .populate("receiver", "username")
+      .populate("listing", "title")
       .sort({ createdAt: 1 });
+
+    // Filter out any messages with missing references
+    const validMessages = messages.filter(
+      message => message.sender && message.receiver && message.listing
+    );
 
     // Mark messages as read
     await Message.updateMany(
@@ -101,7 +143,7 @@ async function getMessages(req, res) {
       { read: true }
     );
 
-    res.status(200).json(messages);
+    res.status(200).json(validMessages);
   } catch (error) {
     console.error("Error getting messages:", error);
     res.status(500).json({ error: "Failed to get messages" });
@@ -112,12 +154,29 @@ async function getUnreadCount(req, res) {
   try {
     const userId = req.user.id;
 
-    const count = await Message.countDocuments({
-      receiver: userId,
-      read: false,
-    });
+    // Get distinct conversations with unread messages
+    const unreadConversations = await Message.aggregate([
+      {
+        $match: {
+          receiver: userId,
+          read: false
+        }
+      },
+      {
+        $group: {
+          _id: {
+            listing: "$listing",
+            sender: "$sender"
+          },
+          unreadCount: { $sum: 1 }
+        }
+      }
+    ]);
 
-    res.status(200).json({ count });
+    // Get total count of unread messages
+    const totalUnread = unreadConversations.reduce((sum, conv) => sum + conv.unreadCount, 0);
+
+    res.status(200).json({ count: totalUnread });
   } catch (error) {
     console.error("Error getting unread count:", error);
     res.status(500).json({ error: "Failed to get unread count" });

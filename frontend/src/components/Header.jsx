@@ -8,11 +8,11 @@ import axios from '../lib/axios';
 const navLinks = [
   { name: "Home", path: "/" },
   { name: "Listings", path: "/listings" },
-  { name: "Messages", path: "/messages", icon: MessageSquare, badge: true },
   { name: "About", path: "/about" },
 ];
 
 function Header() {
+  const navigate = useNavigate();
   const { user, setUser } = useContext(AuthContext);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -31,20 +31,35 @@ function Header() {
   useEffect(() => {
     const fetchUnreadCount = async () => {
       try {
+        if (!user) {
+          setUnreadCount(0);
+          return;
+        }
         const response = await axios.get('http://localhost:5002/api/messages/unread', {
           withCredentials: true
         });
-        setUnreadCount(response.data.count);
+        setUnreadCount(response.data.count || 0); // Ensure we get a number, default to 0
       } catch (err) {
         console.error('Error fetching unread count:', err);
+        setUnreadCount(0);
       }
     };
 
+    // Initial fetch
+    fetchUnreadCount();
+    
+    // Set up polling only if user is logged in
     if (user) {
-      fetchUnreadCount();
       const interval = setInterval(fetchUnreadCount, 30000); // Poll every 30 seconds
-      return () => clearInterval(interval);
+      return () => {
+        clearInterval(interval);
+        setUnreadCount(0); // Reset count when unmounting
+      };
     }
+
+    return () => {
+      setUnreadCount(0); // Reset count when user logs out
+    };
   }, [user]);
 
   return (
@@ -68,17 +83,28 @@ function Header() {
               after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-teal-700
               after:transition-all after:duration-300 hover:after:w-full"
             >
+              <span>{link.name}</span>
+            </Link>
+          ))}
+
+          {user && (
+            <Link
+              to="/messages"
+              className="relative text-sm font-medium text-teal-900 transition-colors duration-300 hover:text-teal-700
+              after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-teal-700
+              after:transition-all after:duration-300 hover:after:w-full"
+            >
               <div className="flex items-center space-x-1">
-                {link.icon && <link.icon className="w-5 h-5" />}
-                <span>{link.name}</span>
-                {link.badge && unreadCount > 0 && user && (
+                <MessageSquare className="w-5 h-5" />
+                <span>Messages</span>
+                {unreadCount > 0 && (
                   <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
                     {unreadCount}
                   </span>
                 )}
               </div>
             </Link>
-          ))}
+          )}
 
           {user ? (
             <div className="relative">
@@ -134,15 +160,17 @@ function Header() {
 
         {/* Mobile menu */}
         <div className="sm:hidden flex items-center">
-          {user && unreadCount > 0 && (
+          {user && (
             <Link
               to="/messages"
               className="mr-4 relative"
             >
               <MessageSquare className="w-6 h-6 text-teal-900" />
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                {unreadCount}
-              </span>
+              {unreadCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                  {unreadCount}
+                </span>
+              )}
             </Link>
           )}
           <button
@@ -173,15 +201,7 @@ function Header() {
               className="text-base font-medium text-teal-900 hover:text-teal-700 transition"
               onClick={() => setMobileOpen(false)}
             >
-              <div className="flex items-center space-x-2">
-                {link.icon && <link.icon className="w-5 h-5" />}
-                <span>{link.name}</span>
-                {link.badge && unreadCount > 0 && user && (
-                  <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1">
-                    {unreadCount}
-                  </span>
-                )}
-              </div>
+              {link.name}
             </Link>
           ))}
           {user ? (
@@ -196,6 +216,7 @@ function Header() {
               >
                 Add Listing
               </Link>
+
               <button
                 onClick={() => {
                   handleLogout();
