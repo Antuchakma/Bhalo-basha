@@ -1,37 +1,27 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router'; // import useNavigate
-import '@fontsource/space-grotesk';
-import { motion } from 'framer-motion';
-import api from '../../lib/axios';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router";
+import { motion } from "framer-motion";
+import "@fontsource/space-grotesk";
+import api from "../../lib/axios";
+import Footer from "../../lib/Footer.jsx";
 
 const pageVariants = {
-  initial: { opacity: 0, scale: 0.95 },
-  animate: {
-    opacity: 1,
-    scale: 1,
-    transition: {
-      duration: 0.5,
-      ease: [0.43, 0.13, 0.23, 0.96],
-    },
-  },
-  exit: {
-    opacity: 0,
-    scale: 0.96,
-    transition: { duration: 0.3, ease: 'easeInOut' },
-  },
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+  exit: { opacity: 0, y: 20, transition: { duration: 0.3 } },
 };
 
 const SignUpPage = () => {
   const [formdata, setFormdata] = useState({
-    fullname: '',
-    username: '',
-    password: '',
-    confirmpassword: '',
-    role: '',
+    fullname: "",
+    username: "",
+    password: "",
+    confirmpassword: "",
+    role: "",
   });
-  const [successMsg, setSuccessMsg] = useState('');
-  const [errorMsg, setErrorMsg] = useState('');
-  const navigate = useNavigate(); // initialize navigate
+  const [successMsg, setSuccessMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,109 +30,144 @@ const SignUpPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMsg('');
-    setSuccessMsg('');
+    setErrorMsg("");
+    setSuccessMsg("");
 
     try {
-      const res = await api.post('/api/auth/signup', formdata, {
-        withCredentials: true, // important if using cookies
+      const res = await api.post("/api/auth/signup", formdata, {
+        withCredentials: true,
       });
-
-      setSuccessMsg('Signup successful! Redirecting to login...');
-      // Redirect after 2 seconds
-      setTimeout(() => {
-        navigate('/login');
-      }, 2000);
-
+      setSuccessMsg("Signup successful! Redirecting to login...");
+      setTimeout(() => navigate("/login"), 2000);
     } catch (error) {
-      setErrorMsg(error.response?.data?.error || 'Signup failed');
+      setErrorMsg(error.response?.data?.error || "Signup failed");
     }
   };
 
   return (
-    <motion.div
-      className="w-screen h-screen flex items-center justify-center font-[Space Grotesk]"
-      style={{ background: 'linear-gradient(135deg, #f2f2f7, #e0e0e5)' }}
-      variants={pageVariants}
-      initial="initial"
-      animate="animate"
-      exit="exit"
-    >
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white/90 backdrop-blur-sm shadow-[0_8px_32px_rgba(0,0,0,0.2)] px-10 py-12 rounded-2xl w-[380px] flex flex-col gap-8 transition duration-300"
-      >
-        <h2 className="text-2xl font-semibold text-center text-[#1e1e1e] tracking-wide">
-          Create Account
-        </h2>
-
-        {successMsg && <p className="text-green-600 text-center">{successMsg}</p>}
-        {errorMsg && <p className="text-red-600 text-center">{errorMsg}</p>}
-
-        <div className="flex flex-col gap-5">
-          {[
-            { name: 'fullname', placeholder: 'Full Name' },
-            { name: 'username', placeholder: 'Username' },
-            { name: 'password', placeholder: 'Password', type: 'password' },
-            { name: 'confirmpassword', placeholder: 'Confirm Password', type: 'password' },
-          ].map((field) => (
-            <input
-              key={field.name}
-              type={field.type || 'text'}
-              name={field.name}
-              value={formdata[field.name]}
-              onChange={handleChange}
-              placeholder={field.placeholder}
-              className="bg-transparent border-b border-gray-400 focus:border-indigo-600 transition outline-none text-sm py-2 placeholder:text-gray-500"
-            />
-          ))}
-
-          <select
-            name="role"
-            value={formdata.role}
-            onChange={handleChange}
-            className="bg-transparent border-b border-gray-400 focus:border-indigo-600 text-sm py-2 outline-none text-gray-700 placeholder:text-gray-500"
-          >
-            <option value="" disabled hidden>Select Role</option>
-            <option value="renter">Renter</option>
-            <option value="owner">Owner</option>
-          </select>
-        </div>
-
-        <button
-          type="submit"
-          className="
-            mt-4
-            bg-gradient-to-r from-gray-700 via-gray-800 to-gray-900
-            text-white
-            py-3
-            rounded-md
-            font-semibold
-            shadow-lg
-            hover:from-gray-600 hover:to-gray-800
-            hover:scale-105
-            active:scale-95
-            active:shadow-inner
-            transition
-            duration-200
-            ease-in-out
-            focus:outline-none
-            focus:ring-2
-            focus:ring-gray-600
-            focus:ring-opacity-50
-          "
+    <div className="w-screen min-h-screen bg-gradient-to-br from-gray-100 to-teal-100 font-[Space Grotesk] flex flex-col justify-between">
+      <div className="flex-grow flex items-center justify-center px-4 sm:px-6 lg:px-8">
+        <motion.div
+          variants={pageVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          className="w-full max-w-md bg-white border border-gray-200 rounded-xl shadow-md p-8 sm:p-10"
         >
-          Sign Up
-        </button>
+          <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+            Sign Up
+          </h2>
 
-        <p className="text-sm text-center text-gray-600 mt-2">
-          Already have an account?
-          <Link to="/login" className="text-indigo-600 hover:underline ml-1 font-medium">
-            Log In
-          </Link>
-        </p>
-      </form>
-    </motion.div>
+          {successMsg && (
+            <div className="bg-green-50 border border-green-300 text-green-700 px-4 py-2 rounded-md text-sm mb-4">
+              {successMsg}
+            </div>
+          )}
+          {errorMsg && (
+            <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-2 rounded-md text-sm mb-4">
+              {errorMsg}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+            <div>
+              <label className="block text-gray-700 text-sm font-medium mb-1">
+                Full Name
+              </label>
+              <input
+                type="text"
+                name="fullname"
+                value={formdata.fullname}
+                onChange={handleChange}
+                placeholder="Enter your full name"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-md text-gray-800 placeholder:text-gray-400 focus:ring-2 focus:ring-teal-500 focus:outline-none transition-all"
+              />
+            </div>
+
+            <div>
+              <label className="block text-gray-700 text-sm font-medium mb-1">
+                Username
+              </label>
+              <input
+                type="text"
+                name="username"
+                value={formdata.username}
+                onChange={handleChange}
+                placeholder="Choose a username"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-md text-gray-800 placeholder:text-gray-400 focus:ring-2 focus:ring-teal-500 focus:outline-none transition-all"
+              />
+            </div>
+
+            <div>
+              <label className="block text-gray-700 text-sm font-medium mb-1">
+                Password
+              </label>
+              <input
+                type="password"
+                name="password"
+                value={formdata.password}
+                onChange={handleChange}
+                placeholder="Create a password"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-md text-gray-800 placeholder:text-gray-400 focus:ring-2 focus:ring-teal-500 focus:outline-none transition-all"
+              />
+            </div>
+
+            <div>
+              <label className="block text-gray-700 text-sm font-medium mb-1">
+                Confirm Password
+              </label>
+              <input
+                type="password"
+                name="confirmpassword"
+                value={formdata.confirmpassword}
+                onChange={handleChange}
+                placeholder="Re-enter your password"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-md text-gray-800 placeholder:text-gray-400 focus:ring-2 focus:ring-teal-500 focus:outline-none transition-all"
+              />
+            </div>
+
+            <div>
+              <label className="block text-gray-700 text-sm font-medium mb-1">
+                Role
+              </label>
+              <select
+                name="role"
+                value={formdata.role}
+                onChange={handleChange}
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-md text-gray-800 focus:ring-2 focus:ring-teal-500 focus:outline-none transition-all bg-white"
+              >
+                <option value="" disabled hidden>
+                  Select Role
+                </option>
+                <option value="renter">Renter</option>
+                <option value="owner">Owner</option>
+              </select>
+            </div>
+
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              type="submit"
+              className="w-full py-2.5 bg-teal-600 text-white font-semibold rounded-md shadow-sm hover:bg-teal-500 transition-all"
+            >
+              Sign Up
+            </motion.button>
+          </form>
+
+          <p className="text-center text-gray-600 mt-6 text-sm">
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              className="text-teal-600 font-medium hover:underline"
+            >
+              Sign in
+            </Link>
+          </p>
+        </motion.div>
+      </div>
+
+   
+    </div>
   );
 };
 

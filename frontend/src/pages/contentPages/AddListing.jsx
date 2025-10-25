@@ -54,12 +54,23 @@ function AddListing() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // 🖼️ Handle image selection
   const handleImageChange = (e) => {
     setFormData((prev) => ({
       ...prev,
-      images: Array.from(e.target.files), // Store multiple selected images
+      images: Array.from(e.target.files),
     }));
+  };
+
+  const handleAmenityToggle = (amenity) => {
+    setFormData((prev) => {
+      const isSelected = prev.amenities.includes(amenity);
+      return {
+        ...prev,
+        amenities: isSelected
+          ? prev.amenities.filter((a) => a !== amenity)
+          : [...prev.amenities, amenity],
+      };
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -80,7 +91,6 @@ function AddListing() {
     data.append("contactPhone", formData.contactPhone);
     data.append("advancePayment", formData.advancePayment);
 
-    // Append all selected images
     for (let i = 0; i < formData.images.length; i++) {
       data.append("images", formData.images[i]);
     }
@@ -105,24 +115,30 @@ function AddListing() {
         <h2 className="text-2xl font-bold text-center text-teal-900 mb-6">
           Add New Listing
         </h2>
-        <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4"
+          encType="multipart/form-data"
+        >
           <input
             type="text"
             name="title"
             placeholder="Title"
             value={formData.title}
             onChange={handleChange}
-            className="w-full input input-bordered"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 outline-none"
             required
           />
+
           <textarea
             name="description"
             placeholder="Description"
             value={formData.description}
             onChange={handleChange}
-            className="w-full textarea textarea-bordered"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 outline-none"
             required
           />
+
           <div className="grid grid-cols-2 gap-4">
             <input
               type="number"
@@ -130,7 +146,7 @@ function AddListing() {
               placeholder="Rent (৳)"
               value={formData.rent}
               onChange={handleChange}
-              className="input input-bordered"
+              className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 outline-none"
               required
             />
             <input
@@ -139,30 +155,33 @@ function AddListing() {
               placeholder="Advance Payment (months)"
               value={formData.advancePayment}
               onChange={handleChange}
-              className="input input-bordered"
+              className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 outline-none"
               required
             />
           </div>
+
           <input
             type="number"
             name="contractDuration"
             placeholder="Contract Duration (months)"
             value={formData.contractDuration}
             onChange={handleChange}
-            className="w-full input input-bordered"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 outline-none"
             required
           />
-          
+
           <select
             name="location"
             value={formData.location}
             onChange={handleChange}
-            className="w-full select select-bordered"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 outline-none"
             required
           >
             <option value="">Select Location</option>
             {locationOptions.map((loc) => (
-              <option key={loc} value={loc}>{loc}</option>
+              <option key={loc} value={loc}>
+                {loc}
+              </option>
             ))}
           </select>
 
@@ -171,7 +190,7 @@ function AddListing() {
             placeholder="Specific Address (House no., Road no., etc.)"
             value={formData.specificAddress}
             onChange={handleChange}
-            className="w-full textarea textarea-bordered"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 outline-none"
             required
           />
 
@@ -179,12 +198,14 @@ function AddListing() {
             name="propertyType"
             value={formData.propertyType}
             onChange={handleChange}
-            className="w-full select select-bordered"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 outline-none"
             required
           >
             <option value="">Select Property Type</option>
             {propertyTypes.map((type) => (
-              <option key={type} value={type}>{type}</option>
+              <option key={type} value={type}>
+                {type}
+              </option>
             ))}
           </select>
 
@@ -195,7 +216,7 @@ function AddListing() {
               placeholder="Bedrooms"
               value={formData.bedrooms}
               onChange={handleChange}
-              className="input input-bordered"
+              className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 outline-none"
               required
             />
             <input
@@ -204,7 +225,7 @@ function AddListing() {
               placeholder="Bathrooms"
               value={formData.bathrooms}
               onChange={handleChange}
-              className="input input-bordered"
+              className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 outline-none"
               required
             />
           </div>
@@ -214,34 +235,35 @@ function AddListing() {
               type="checkbox"
               name="furnished"
               checked={formData.furnished}
-              onChange={(e) => setFormData(prev => ({ ...prev, furnished: e.target.checked }))}
-              className="checkbox"
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  furnished: e.target.checked,
+                }))
+              }
+              className="w-4 h-4 accent-teal-700"
             />
             <label>Furnished</label>
           </div>
 
           <div className="space-y-2">
-            <label className="block">Amenities</label>
+            <label className="block font-medium">Amenities</label>
             <div className="grid grid-cols-2 gap-2">
-              {amenityOptions.map((amenity) => (
-                <label key={amenity} className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={formData.amenities.includes(amenity)}
-                    onChange={(e) => {
-                      const checked = e.target.checked;
-                      setFormData(prev => ({
-                        ...prev,
-                        amenities: checked 
-                          ? [...prev.amenities, amenity]
-                          : prev.amenities.filter(a => a !== amenity)
-                      }));
-                    }}
-                    className="checkbox checkbox-sm"
-                  />
-                  {amenity}
-                </label>
-              ))}
+              {amenityOptions.map((amenity) => {
+                const isChecked = formData.amenities.includes(amenity);
+                return (
+                  <label key={amenity} className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      value={amenity}
+                      checked={isChecked}
+                      onChange={() => handleAmenityToggle(amenity)}
+                      className="w-4 h-4 accent-teal-700"
+                    />
+                    <span>{amenity}</span>
+                  </label>
+                );
+              })}
             </div>
           </div>
 
@@ -251,18 +273,17 @@ function AddListing() {
             placeholder="Contact Phone"
             value={formData.contactPhone}
             onChange={handleChange}
-            className="w-full input input-bordered"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 outline-none"
             required
           />
 
-          {/* 🖼️ Image upload field */}
           <input
             type="file"
             name="images"
             accept="image/*"
             multiple
             onChange={handleImageChange}
-            className="w-full file-input file-input-bordered"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2"
             required
           />
 

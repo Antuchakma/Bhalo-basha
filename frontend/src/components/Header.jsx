@@ -8,7 +8,14 @@ import axios from '../lib/axios';
 const navLinks = [
   { name: "Home", path: "/" },
   { name: "Listings", path: "/listings" },
+   { 
+    name: "Messages", 
+    path: "/messages",
+    requiresAuth: true,
+    showUnreadCount: true
+  },
   { name: "About", path: "/about" },
+ 
 ];
 
 function Header() {
@@ -75,36 +82,30 @@ function Header() {
         </div>
 
         <div className="hidden sm:flex items-center space-x-6">
-          {navLinks.map((link, index) => (
-            <Link
-              key={index}
-              to={link.path}
-              className="relative text-sm font-medium text-teal-900 transition-colors duration-300 hover:text-teal-700
-              after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-teal-700
-              after:transition-all after:duration-300 hover:after:w-full"
-            >
-              <span>{link.name}</span>
-            </Link>
-          ))}
+          {navLinks.map((link, index) => {
+            // Skip auth-required links if user is not logged in
+            if (link.requiresAuth && !user) return null;
 
-          {user && (
-            <Link
-              to="/messages"
-              className="relative text-sm font-medium text-teal-900 transition-colors duration-300 hover:text-teal-700
-              after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-teal-700
-              after:transition-all after:duration-300 hover:after:w-full"
-            >
-              <div className="flex items-center space-x-1">
-                <MessageSquare className="w-5 h-5" />
-                <span>Messages</span>
-                {unreadCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                    {unreadCount}
-                  </span>
-                )}
-              </div>
-            </Link>
-          )}
+            return (
+              <Link
+                key={index}
+                to={link.path}
+                className="relative text-sm font-medium text-teal-900 transition-colors duration-300 hover:text-teal-700
+                after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-teal-700
+                after:transition-all after:duration-300 hover:after:w-full"
+              >
+                <div className="flex items-center space-x-1">
+                  {link.icon && <link.icon className="w-5 h-5" />}
+                  <span>{link.name}</span>
+                  {link.showUnreadCount && unreadCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                      {unreadCount}
+                    </span>
+                  )}
+                </div>
+              </Link>
+            );
+          })}
 
           {user ? (
             <div className="relative">
@@ -160,19 +161,6 @@ function Header() {
 
         {/* Mobile menu */}
         <div className="sm:hidden flex items-center">
-          {user && (
-            <Link
-              to="/messages"
-              className="mr-4 relative"
-            >
-              <MessageSquare className="w-6 h-6 text-teal-900" />
-              {unreadCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                  {unreadCount}
-                </span>
-              )}
-            </Link>
-          )}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="btn btn-ghost btn-circle"
@@ -194,16 +182,27 @@ function Header() {
         }`}
       >
         <div className="flex flex-col items-center space-y-4 py-4">
-          {navLinks.map((link, index) => (
-            <Link
-              key={index}
-              to={link.path}
-              className="text-base font-medium text-teal-900 hover:text-teal-700 transition"
-              onClick={() => setMobileOpen(false)}
-            >
-              {link.name}
-            </Link>
-          ))}
+          {navLinks.map((link, index) => {
+            // Skip auth-required links if user is not logged in
+            if (link.requiresAuth && !user) return null;
+
+            return (
+              <Link
+                key={index}
+                to={link.path}
+                className="text-base font-medium text-teal-900 hover:text-teal-700 transition flex items-center space-x-2"
+                onClick={() => setMobileOpen(false)}
+              >
+                {link.icon && <link.icon className="w-5 h-5" />}
+                <span>{link.name}</span>
+                {link.showUnreadCount && unreadCount > 0 && (
+                  <span className="bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                    {unreadCount}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
           {user ? (
             <>
               <span className="font-semibold text-teal-900">

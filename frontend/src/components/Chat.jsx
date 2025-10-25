@@ -10,10 +10,8 @@ function Chat({ listingId, receiverId, receiverName, onClose, position = 'fixed'
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
-  const typingTimeoutRef = useRef(null);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -70,18 +68,6 @@ function Chat({ listingId, receiverId, receiverName, onClose, position = 'fixed'
       console.error('Error sending message:', err);
       alert('Failed to send message');
     }
-  };
-
-  const handleTyping = () => {
-    setIsTyping(true);
-    // Clear existing timeout
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-    }
-    // Set new timeout
-    typingTimeoutRef.current = setTimeout(() => {
-      setIsTyping(false);
-    }, 1000);
   };
 
   const formatMessageDate = (date) => {
@@ -211,13 +197,6 @@ function Chat({ listingId, receiverId, receiverName, onClose, position = 'fixed'
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Typing indicator */}
-      {isTyping && (
-        <div className="px-4 py-2 text-xs text-gray-500 animate-pulse">
-          {receiverName} is typing...
-        </div>
-      )}
-
       {/* Message input */}
       <form onSubmit={handleSubmit} className="p-4 border-t">
         <div className="flex space-x-2">
@@ -225,7 +204,6 @@ function Chat({ listingId, receiverId, receiverName, onClose, position = 'fixed'
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            onKeyDown={handleTyping}
             placeholder="Type a message..."
             className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:border-teal-500"
           />
