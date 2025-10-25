@@ -59,6 +59,19 @@ const productSchema = new mongoose.Schema({
     type: [String],
     default: [],
   },
+  listingType: {
+    type: String,
+    required: true,
+    enum: ['owner', 'tenant-roommate'],
+  },
+  listingTypeDetails: {
+    type: String,
+  },
+  genderPreference: {
+    type: String,
+    required: true,
+    enum: ['male', 'female', 'any'],
+  },
   contactPhone: {
     type: String,
     required: true,

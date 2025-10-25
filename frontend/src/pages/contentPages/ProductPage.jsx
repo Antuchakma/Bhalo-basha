@@ -95,15 +95,61 @@ function ProductPage() {
 
         {/* Details Section */}
         <div className="p-8 space-y-6">
-          <div className="flex justify-between items-start mb-4">
-            <h1 className="text-3xl font-bold text-teal-900">{product.title}</h1>
-            <div className="text-right">
-              <p className="text-sm text-teal-600">Posted by</p>
-              <p className="font-semibold text-teal-800">{product.user?.username}</p>
-            </div>
-          </div>
+            <div className="space-y-4 mb-6">
+              {/* Listing Status Badges */}
+              <div className="flex flex-wrap gap-3">
+                <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold ${
+                  product.listingType === 'owner' 
+                    ? 'bg-teal-100 text-teal-800 border border-teal-200'
+                    : 'bg-purple-100 text-purple-800 border border-purple-200'
+                }`}>
+                  {product.listingType === 'owner' ? '🏠 Property Owner' : '👥 Seeking Roommate'}
+                </span>
+                <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold ${
+                  !product.genderPreference || product.genderPreference === 'any'
+                    ? 'bg-gray-100 text-gray-800 border border-gray-200'
+                    : product.genderPreference === 'male'
+                      ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                      : 'bg-pink-100 text-pink-800 border border-pink-200'
+                }`}>
+                  {!product.genderPreference ? 'Any Gender' :
+                    product.genderPreference === 'any' 
+                      ? 'Any Gender' 
+                      : `${product.genderPreference.charAt(0).toUpperCase() + product.genderPreference.slice(1)}s Only`}
+                </span>
+              </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="flex justify-between items-start">
+                <h1 className="text-3xl font-bold text-teal-900">{product.title}</h1>
+                <div className="text-right">
+                  <p className="text-sm text-teal-600">Posted by</p>
+                  <p className="font-semibold text-teal-800">{product.user?.username}</p>
+                </div>
+              </div>
+
+              {/* Updated Gender Preference Badge Content */}
+              <span className="inline-flex items-center">
+                {!product.genderPreference || product.genderPreference === 'any' 
+                  ? '👥 Open to All Genders'
+                  : product.genderPreference === 'male'
+                    ? '👨 Males Only'
+                    : '👩 Females Only'}
+              </span>
+
+              {/* Roommate Details Section */}
+              {product.listingType === 'tenant-roommate' && (
+                <div className="mt-4 bg-purple-50 border border-purple-200 p-6 rounded-xl">
+                  <h3 className="font-semibold text-lg text-purple-900 mb-3">
+                    About the Current Tenant
+                  </h3>
+                  {product.listingTypeDetails ? (
+                    <p className="text-purple-800">{product.listingTypeDetails}</p>
+                  ) : (
+                    <p className="text-purple-600 italic">No additional details provided</p>
+                  )}
+                </div>
+              )}
+            </div>          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-6">
               {/* Key Details */}
               <div className="grid grid-cols-2 gap-4">
@@ -177,7 +223,20 @@ function ProductPage() {
             <div className="space-y-6">
               {/* Description */}
               <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-gray-800">Description</h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-gray-800">Description</h3>
+                  <div className="text-sm">
+                    <span className={`inline-flex items-center px-3 py-1 rounded-full ${
+                      product.listingType === 'owner'
+                        ? 'bg-teal-50 text-teal-700'
+                        : 'bg-purple-50 text-purple-700'
+                    }`}>
+                      {product.listingType === 'owner'
+                        ? '🏠 Listed by Property Owner'
+                        : '👥 Listed by Current Tenant'}
+                    </span>
+                  </div>
+                </div>
                 <p className="text-gray-600 leading-relaxed whitespace-pre-line">
                   {product.description}
                 </p>

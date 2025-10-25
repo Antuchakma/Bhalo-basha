@@ -3,9 +3,10 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router";
 import { AuthContext } from "../../../context/AuthContext.jsx";
 import Footer from "../../lib/Footer.jsx";
-import { UserCircle, Menu, X } from "lucide-react";
 import ListingChatBot from "../../components/ListingChatBot";
+import Navbar from "../../components/Navbar";
 import { motion } from "framer-motion";
+import { UserCircle, Menu, X } from "lucide-react";
 import "@fontsource/space-grotesk";
 
 const navLinks = [
@@ -22,7 +23,6 @@ function ListingsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
   const [filters, setFilters] = useState({
     location: '',
     propertyType: '',
@@ -30,6 +30,8 @@ function ListingsPage() {
     maxRent: '',
     bedrooms: '',
     furnished: '',
+    listingType: '',
+    genderPreference: '',
   });
   const [showFilters, setShowFilters] = useState(false);
 
@@ -51,6 +53,7 @@ function ListingsPage() {
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
+    console.log('Filter changed:', { name, value });
     setFilters(prev => ({
       ...prev,
       [name]: value
@@ -60,6 +63,13 @@ function ListingsPage() {
   const applyFilters = (chatbotFilters = null) => {
     let filtered = [...products];
     const activeFilters = chatbotFilters || filters;
+    
+    // Debug log for listing type filter
+    console.log('Current filters:', activeFilters);
+    console.log('Available products:', products.map(p => ({
+      title: p.title,
+      listingType: p.listingType
+    })));
 
     if (activeFilters.location) {
       filtered = filtered.filter(product => product.location === activeFilters.location);
@@ -88,6 +98,22 @@ function ListingsPage() {
 
     if (activeFilters.furnished) {
       filtered = filtered.filter(product => product.furnished === (activeFilters.furnished === 'true'));
+    }
+
+    if (activeFilters.listingType) {
+      console.log('Active filter value:', activeFilters.listingType);
+      filtered = filtered.filter(product => {
+        console.log('Product:', {
+          title: product.title,
+          listingType: product.listingType,
+          matches: product.listingType === activeFilters.listingType
+        });
+        return product.listingType === activeFilters.listingType;
+      });
+    }
+
+    if (activeFilters.genderPreference) {
+      filtered = filtered.filter(product => product.genderPreference === activeFilters.genderPreference);
     }
 
     setFilteredProducts(filtered);
@@ -142,148 +168,12 @@ function ListingsPage() {
 
   return (
     <div className="w-screen min-h-screen bg-base-100 text-base-content font-[Space Grotesk] overflow-x-hidden">
-      {/* Navbar */}
-      <div className="navbar px-4 sm:px-6 shadow-md h-16 fixed top-0 left-0 right-0 z-30 bg-white border-b border-gray-200">
-        <div className="flex-1">
-          <Link
-            to="/"
-            className="text-xl sm:text-2xl font-bold tracking-wide text-teal-900 hover:text-teal-700 transition-colors"
-          >
-            Bhalo-Basha
-          </Link>
-        </div>
-
-        <div className="hidden sm:flex items-center space-x-6">
-          {navLinks.map((link, index) => (
-            <Link
-              key={index}
-              to={link.path}
-              className="relative text-sm font-medium text-teal-900 transition-colors duration-300 hover:text-teal-700
-              after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-teal-700
-              after:transition-all after:duration-300 hover:after:w-full"
-            >
-              {link.name}
-            </Link>
-          ))}
-
-          {user ? (
-            <div className="relative">
-              <button
-                onClick={() => setProfileOpen(!profileOpen)}
-                className="btn btn-ghost btn-circle"
-              >
-                <UserCircle className="w-6 h-6 text-teal-900" />
-              </button>
-              {profileOpen && (
-                <ul className="absolute right-0 mt-3 z-[1] p-2 shadow-lg bg-white rounded-lg w-48 border border-gray-200">
-                  <li className="px-2 py-1 font-semibold text-gray-700">
-                    {user.username} ({user.role})
-                  </li>
-                  <li>
-                    <Link
-                      to="/profile"
-                      className="block px-2 py-1 text-sm font-medium text-gray-800 hover:text-teal-700 transition-colors"
-                    >
-                      View Profile
-                    </Link>
-                  </li>
-
-                  <li>
-                    <Link
-                      to="/add-listing"
-                      className="block px-2 py-1 text-sm font-medium text-gray-800 hover:text-teal-700 transition-colors"
-                    >
-                      Add Listing
-                    </Link>
-                  </li>
-
-                  <li>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full text-left px-2 py-1 text-sm font-medium text-red-600 hover:text-red-500 transition-colors"
-                    >
-                      Logout
-                    </button>
-                  </li>
-                </ul>
-              )}
-            </div>
-          ) : (
-            <Link
-              to="/login"
-              className="px-5 py-2 bg-teal-900 text-white rounded-full font-semibold shadow-md hover:scale-105 transition-transform"
-            >
-              Login / Signup
-            </Link>
-          )}
-        </div>
-
-        {/* Mobile menu */}
-        <div className="sm:hidden flex items-center">
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="btn btn-ghost btn-circle"
-            aria-label="Toggle Menu"
-          >
-            {mobileOpen ? (
-              <X className="w-6 h-6 text-teal-900" />
-            ) : (
-              <Menu className="w-6 h-6 text-teal-900" />
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile dropdown */}
-      <div
-        className={`sm:hidden fixed top-16 left-0 w-full bg-white shadow-md border-b border-gray-200 transition-all duration-300 overflow-hidden z-20 ${
-          mobileOpen ? "max-h-96" : "max-h-0"
-        }`}
-      >
-        <div className="flex flex-col items-center space-y-4 py-4">
-          {navLinks.map((link, index) => (
-            <Link
-              key={index}
-              to={link.path}
-              className="text-base font-medium text-teal-900 hover:text-teal-700 transition"
-              onClick={() => setMobileOpen(false)}
-            >
-              {link.name}
-            </Link>
-          ))}
-          {user ? (
-            <>
-              <span className="font-semibold text-teal-900">
-                {user.username} ({user.role})
-              </span>
-              <Link
-                to="/add-listing"
-                className="text-base font-medium text-teal-900 hover:text-teal-700 transition"
-                onClick={() => setMobileOpen(false)}
-              >
-                Add Listing
-              </Link>
-              <button
-                onClick={() => {
-                  handleLogout();
-                  setMobileOpen(false);
-                }}
-                className="text-base font-medium text-red-600 hover:text-red-500 transition"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <Link
-              to="/login"
-              className="text-base font-medium text-teal-900 hover:text-teal-700 transition"
-              onClick={() => setMobileOpen(false)}
-            >
-              Login / Signup
-            </Link>
-          )}
-        </div>
-      </div>
+      <Navbar 
+        user={user}
+        setUser={setUser}
+        mobileOpen={mobileOpen}
+        setMobileOpen={setMobileOpen}
+      />
 
       {/* Main Section */}
       <div className="pt-24 pb-20 px-6 bg-gradient-to-b from-gray-50 to-white min-h-screen">
@@ -388,6 +278,29 @@ function ListingsPage() {
                       <option value="true">Furnished</option>
                       <option value="false">Unfurnished</option>
                     </select>
+
+                    <select
+                      name="listingType"
+                      value={filters.listingType}
+                      onChange={handleFilterChange}
+                      className="select select-bordered w-full"
+                    >
+                      <option value="">Listing Type</option>
+                      <option value="owner">Property Owner</option>
+                      <option value="tenant-roommate">Tenant Seeking Roommate</option>
+                    </select>
+
+                    <select
+                      name="genderPreference"
+                      value={filters.genderPreference}
+                      onChange={handleFilterChange}
+                      className="select select-bordered w-full"
+                    >
+                      <option value="">Gender Preference</option>
+                      <option value="male">Males Only</option>
+                      <option value="female">Females Only</option>
+                      <option value="any">Any Gender</option>
+                    </select>
                   </div>
 
                   <div className="flex justify-end gap-2">
@@ -437,17 +350,39 @@ function ListingsPage() {
                           className="w-full h-56 object-cover"
                         />
                         <div className="p-5">
+                          {/* Badges for listing type and gender preference */}
+                          <div className="flex flex-wrap gap-2 mb-3">
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              product.listingType === 'owner' 
+                                ? 'bg-teal-100 text-teal-800'
+                                : 'bg-purple-100 text-purple-800'
+                            }`}>
+                              {product.listingType === 'owner' ? 'Property Owner' : 'Tenant Seeking Roommate'}
+                            </span>
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              !product.genderPreference || product.genderPreference === 'any'
+                                ? 'bg-gray-100 text-gray-800'
+                                : product.genderPreference === 'male'
+                                  ? 'bg-blue-100 text-blue-800'
+                                  : 'bg-pink-100 text-pink-800'
+                            }`}>
+                              {!product.genderPreference || product.genderPreference === 'any' 
+                                ? 'Any Gender' 
+                                : `${product.genderPreference === 'male' ? 'Males' : 'Females'} Only`}
+                            </span>
+                          </div>
+
                           <h2 className="text-xl font-semibold text-gray-800">
                             {product.title}
                           </h2>
-                            <div className="flex justify-between items-start">
-                              <p className="text-gray-500 text-sm">
-                                {product.location}
-                              </p>
-                              <p className="text-xs text-teal-600">
-                                Posted by {product.user?.username}
-                              </p>
-                            </div>
+                          <div className="flex justify-between items-start">
+                            <p className="text-gray-500 text-sm">
+                              {product.location}
+                            </p>
+                            <p className="text-xs text-teal-600">
+                              Posted by {product.user?.username}
+                            </p>
+                          </div>
                           <p className="text-gray-600 line-clamp-2 text-sm mb-3">
                             {product.description}
                           </p>

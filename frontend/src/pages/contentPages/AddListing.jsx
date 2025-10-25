@@ -11,6 +11,9 @@ function AddListing() {
     location: "",
     specificAddress: "",
     propertyType: "",
+    listingType: "", // owner or tenant-roommate
+    listingTypeDetails: "", // additional details for roommate listing
+    genderPreference: "", // male, female, or any
     bedrooms: "",
     bathrooms: "",
     furnished: false,
@@ -76,6 +79,19 @@ function AddListing() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Debug log for listing type
+    console.log('Submitting listing with type:', formData.listingType);
+
+    if (!formData.listingType) {
+      alert("Please select whether you are a property owner or tenant seeking roommate");
+      return;
+    }
+
+    if (!formData.genderPreference) {
+      alert("Please select a gender preference for the property");
+      return;
+    }
+
     const data = new FormData();
     data.append("title", formData.title);
     data.append("description", formData.description);
@@ -84,12 +100,15 @@ function AddListing() {
     data.append("location", formData.location);
     data.append("specificAddress", formData.specificAddress);
     data.append("propertyType", formData.propertyType);
+    data.append("listingType", formData.listingType);
+    data.append("listingTypeDetails", formData.listingTypeDetails);
     data.append("bedrooms", formData.bedrooms);
     data.append("bathrooms", formData.bathrooms);
     data.append("furnished", formData.furnished);
     data.append("amenities", JSON.stringify(formData.amenities));
     data.append("contactPhone", formData.contactPhone);
     data.append("advancePayment", formData.advancePayment);
+    data.append("genderPreference", formData.genderPreference);
 
     for (let i = 0; i < formData.images.length; i++) {
       data.append("images", formData.images[i]);
@@ -120,6 +139,50 @@ function AddListing() {
           className="space-y-4"
           encType="multipart/form-data"
         >
+          <div className="mb-6 p-4 bg-teal-50 rounded-lg border-2 border-teal-200">
+            <label className="block font-semibold text-teal-900 mb-2">I am:</label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <button
+                type="button"
+                onClick={() => setFormData(prev => ({ ...prev, listingType: 'owner' }))}
+                className={`p-4 rounded-lg border-2 transition-all ${
+                  formData.listingType === 'owner'
+                    ? 'border-teal-600 bg-teal-600 text-white'
+                    : 'border-gray-300 hover:border-teal-400'
+                }`}
+              >
+                <span className="block text-lg font-medium">Property Owner</span>
+                <span className="block text-sm opacity-80">I want to rent out my property</span>
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => setFormData(prev => ({ ...prev, listingType: 'tenant-roommate' }))}
+                className={`p-4 rounded-lg border-2 transition-all ${
+                  formData.listingType === 'tenant-roommate'
+                    ? 'border-teal-600 bg-teal-600 text-white'
+                    : 'border-gray-300 hover:border-teal-400'
+                }`}
+              >
+                <span className="block text-lg font-medium">Tenant Seeking Roommate</span>
+                <span className="block text-sm opacity-80">I want to share my rented space</span>
+              </button>
+            </div>
+          </div>
+
+          {formData.listingType === 'tenant-roommate' && (
+            <div className="mb-4">
+              <textarea
+                name="listingTypeDetails"
+                placeholder="Tell potential roommates about yourself and what you're looking for (e.g., student/professional, preferred gender, smoking/non-smoking, etc.)"
+                value={formData.listingTypeDetails}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 outline-none"
+                required
+              />
+            </div>
+          )}
+
           <input
             type="text"
             name="title"
@@ -208,6 +271,45 @@ function AddListing() {
               </option>
             ))}
           </select>
+
+          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <label className="block font-semibold text-gray-900 mb-3">Gender Preference:</label>
+            <div className="grid grid-cols-3 gap-3">
+              <button
+                type="button"
+                onClick={() => setFormData(prev => ({ ...prev, genderPreference: 'male' }))}
+                className={`p-2 rounded-lg border-2 transition-all ${
+                  formData.genderPreference === 'male'
+                    ? 'border-blue-600 bg-blue-600 text-white'
+                    : 'border-gray-300 hover:border-blue-400'
+                }`}
+              >
+                Males Only
+              </button>
+              <button
+                type="button"
+                onClick={() => setFormData(prev => ({ ...prev, genderPreference: 'female' }))}
+                className={`p-2 rounded-lg border-2 transition-all ${
+                  formData.genderPreference === 'female'
+                    ? 'border-pink-600 bg-pink-600 text-white'
+                    : 'border-gray-300 hover:border-pink-400'
+                }`}
+              >
+                Females Only
+              </button>
+              <button
+                type="button"
+                onClick={() => setFormData(prev => ({ ...prev, genderPreference: 'any' }))}
+                className={`p-2 rounded-lg border-2 transition-all ${
+                  formData.genderPreference === 'any'
+                    ? 'border-gray-600 bg-gray-600 text-white'
+                    : 'border-gray-300 hover:border-gray-400'
+                }`}
+              >
+                Any Gender
+              </button>
+            </div>
+          </div>
 
           <div className="grid grid-cols-2 gap-4">
             <input
