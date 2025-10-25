@@ -22,7 +22,6 @@ function Header() {
   const navigate = useNavigate();
   const { user, setUser } = useContext(AuthContext);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
   const handleLogout = async () => {
@@ -108,46 +107,45 @@ function Header() {
           })}
 
           {user ? (
-            <div className="relative">
-              <button
-                onClick={() => setProfileOpen(!profileOpen)}
-                className="btn btn-ghost btn-circle"
-              >
-                <UserCircle className="w-6 h-6 text-teal-900" />
-              </button>
-              {profileOpen && (
-                <ul className="absolute right-0 mt-3 z-[1] p-2 shadow-lg bg-white rounded-lg w-48 border border-gray-200">
-                  <li className="px-2 py-1 font-semibold text-gray-700">
-                    {user.username} ({user.role})
-                  </li>
-                  <li>
-                    <Link
-                      to="/profile"
-                      className="block px-2 py-1 text-sm font-medium text-gray-800 hover:text-teal-700 transition-colors"
-                    >
-                      View Profile
-                    </Link>
-                  </li>
+            <div className="relative inline-block">
+              <div className="group">
+                <div className="btn btn-ghost btn-circle cursor-pointer">
+                  <UserCircle className="w-6 h-6 text-teal-900" />
+                </div>
+                <div className="invisible group-hover:visible opacity-0 group-hover:opacity-100 absolute right-0 mt-2 z-[1] min-w-[200px] transition-all duration-200 ease-in-out">
+                  <ul className="py-2 bg-white rounded-lg shadow-lg border border-gray-200">
+                    <li className="px-4 py-2 font-semibold text-gray-700 border-b border-gray-100">
+                      {user.username} ({user.role})
+                    </li>
+                    <li>
+                      <Link
+                        to="/profile"
+                        className="block px-4 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-700 transition-colors"
+                      >
+                        View Profile
+                      </Link>
+                    </li>
 
-                  <li>
-                    <Link
-                      to="/add-listing"
-                      className="block px-2 py-1 text-sm font-medium text-gray-800 hover:text-teal-700 transition-colors"
-                    >
-                      Add Listing
-                    </Link>
-                  </li>
+                    <li>
+                      <Link
+                        to="/add-listing"
+                        className="block px-4 py-2 text-sm font-medium text-gray-800 hover:bg-teal-50 hover:text-teal-700 transition-colors"
+                      >
+                        Add Listing
+                      </Link>
+                    </li>
 
-                  <li>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full text-left px-2 py-1 text-sm font-medium text-red-600 hover:text-red-500 transition-colors"
-                    >
-                      Logout
-                    </button>
-                  </li>
-                </ul>
-              )}
+                    <li>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors"
+                      >
+                        Logout
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </div>
           ) : (
             <Link
