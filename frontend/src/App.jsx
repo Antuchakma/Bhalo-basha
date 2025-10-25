@@ -11,6 +11,7 @@ import ProductPage from "./pages/contentPages/ProductPage.jsx";
 import ProfilePage from './pages/contentPages/ProfilePage.jsx';
 import MessagesPage from './pages/contentPages/MessagesPage.jsx';
 import Header from './components/Header.jsx';
+import AboutPage from './pages/contentPages/AboutPage.jsx';
 
 
 const App = () => {
@@ -31,6 +32,7 @@ const App = () => {
               <Route path="/listing/:id" element={<ProductPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/messages" element={<MessagesPage />} />
+              <Route path="/about" element={<AboutPage />} />
             </Routes>
           </AnimatePresence>
         </div>

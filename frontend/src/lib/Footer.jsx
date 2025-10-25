@@ -50,7 +50,7 @@ const Footer = () => {
         <div>
           <h3 className="text-xl font-bold mb-4">Contact</h3>
           <p className="text-gray-700">Email: support@bhalo-basha.com</p>
-          <p className="text-gray-700">Phone: +880 123 456 789</p>
+          <p className="text-gray-700">Phone: +880 1974625629</p>
           <div className="flex space-x-4 mt-3">
             <a href="#" className="hover:text-teal-700 transition">
               Facebook
