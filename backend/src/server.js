@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 5002;
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: process.env.FRONTEND_URL || "http://bhalo-basha.vercel.app",
     credentials: true
 }))
 app.use("/uploads", express.static("uploads"));
