@@ -1,7 +1,18 @@
 {
+  "name": "bhalo-basha",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev"
+  },
   "dependencies": {
     "cloudinary": "^1.41.3",
     "multer": "^2.0.2",
     "multer-storage-cloudinary": "^4.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
   }
 }

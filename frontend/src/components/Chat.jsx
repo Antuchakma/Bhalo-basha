@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
-import axios from 'axios';
+import axios from '../lib/axios';
 import { Send, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -17,8 +17,7 @@ function Chat({ listingId, receiverId, receiverName, onClose, position = 'fixed'
     const fetchMessages = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5002/api/messages/${receiverId}/${listingId}`,
-          { withCredentials: true }
+          `/api/messages/${receiverId}/${listingId}`
         );
         setMessages(response.data);
         setLoading(false);
@@ -51,13 +50,12 @@ function Chat({ listingId, receiverId, receiverName, onClose, position = 'fixed'
 
     try {
       const response = await axios.post(
-        'http://localhost:5002/api/messages',
+        '/api/messages',
         {
           content: newMessage.trim(),
           receiverId,
           listingId,
-        },
-        { withCredentials: true }
+        }
       );
 
       setMessages((prev) => [...prev, response.data]);
@@ -158,17 +156,17 @@ function Chat({ listingId, receiverId, receiverName, onClose, position = 'fixed'
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className={`flex flex-col ${
-                      message.sender._id === user.id ? 'items-end' : 'items-start'
+                      message.sender._id === user._id ? 'items-end' : 'items-start'
                     }`}
                   >
                     <span className={`text-xs mb-1 ${
-                      message.sender._id === user.id ? 'text-gray-600' : 'text-gray-600'
+                      message.sender._id === user._id ? 'text-gray-600' : 'text-gray-600'
                     }`}>
-                      {message.sender._id === user.id ? 'You' : message.sender.username}
+                      {message.sender._id === user._id ? 'You' : message.sender.username}
                     </span>
                     <div
                       className={`max-w-[70%] px-4 py-2 rounded-2xl ${
-                        message.sender._id === user.id
+                        message.sender._id === user._id
                           ? 'bg-teal-600 text-white ml-auto'
                           : 'bg-gray-100 text-gray-900 mr-auto'
                       }`}
@@ -176,7 +174,7 @@ function Chat({ listingId, receiverId, receiverName, onClose, position = 'fixed'
                       <p className="text-sm break-words">{message.content}</p>
                       <p
                         className={`text-xs mt-1 ${
-                          message.sender._id === user.id
+                          message.sender._id === user._id
                             ? 'text-teal-100'
                             : 'text-gray-500'
                         }`}

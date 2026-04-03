@@ -57,7 +57,8 @@ export const Signup = async (req,res)=>
             _id:newUser._id,
             fullname:newUser.fullname,
             username:newUser.username,
-            profilepic:newUser.profilepic
+            profilepic:newUser.profilepic,
+            role:newUser.role
 
            });
            }
@@ -97,6 +98,7 @@ export const Login = async (req, res) => {
       fullname: user.fullname,
       username: user.username,
       profilepic: user.profilepic,
+      role: user.role,
     });
 
   } catch (error) {

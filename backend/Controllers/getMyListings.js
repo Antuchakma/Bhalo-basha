@@ -2,7 +2,7 @@ import Product from "../models/product.model.js";
 
 export const getMyListings = async (req, res) => {
     try {
-        const products = await Product.find({ user: req.user.id })
+        const products = await Product.find({ user: req.user._id })
             .sort({ createdAt: -1 }); // Sort by newest first
         res.status(200).json({ products });
     } catch (error) {

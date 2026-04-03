@@ -13,7 +13,7 @@ export const deleteProduct = async (req, res) => {
     if (!product) return res.status(404).json({ error: "Product not found" });
 
     // Only the owner can delete
-    if (product.user.toString() !== req.user.id) {
+    if (product.user.toString() !== req.user._id.toString()) {
       return res.status(403).json({ error: "You are not authorized to delete this product" });
     }
 

@@ -6,7 +6,7 @@ export { getConversations, sendMessage, getMessages, getUnreadCount };
 
 async function getConversations(req, res) {
   try {
-    const userId = req.user.id;
+    const userId = req.user._id;
 
     // Get all messages where user is either sender or receiver
     const messages = await Message.find({
@@ -78,7 +78,7 @@ async function getConversations(req, res) {
 async function sendMessage(req, res) {
   try {
     const { content, receiverId, listingId } = req.body;
-    const senderId = req.user.id;
+    const senderId = req.user._id;
 
     if (senderId === receiverId) {
       return res.status(400).json({ error: "You cannot message yourself" });
@@ -107,7 +107,7 @@ async function sendMessage(req, res) {
 async function getMessages(req, res) {
   try {
     const { userId, listingId } = req.params;
-    const currentUserId = req.user.id;
+    const currentUserId = req.user._id;
 
     // First, verify that the listing exists
     const listing = await Product.findById(listingId);
@@ -152,7 +152,7 @@ async function getMessages(req, res) {
 
 async function getUnreadCount(req, res) {
   try {
-    const userId = req.user.id;
+    const userId = req.user._id;
 
     // Get distinct conversations with unread messages
     const unreadConversations = await Message.aggregate([
