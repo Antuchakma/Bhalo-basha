@@ -1,8 +1,8 @@
 import axios from 'axios'
 
 const api = axios.create({
-    baseURL:'http://localhost:5002',
-    withCredentials:true
+    baseURL: import.meta.env.VITE_API_URL || 'https://bhalobasha.onrender.com',
+    withCredentials: true
 })
 
 export default api;

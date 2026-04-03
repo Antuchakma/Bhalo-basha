@@ -7,15 +7,16 @@ import cookieParser from "cookie-parser";
 
 import dotenv from "dotenv";
 import cors from 'cors'
-const app = express();
-
 
 dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 5002;
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin:"http://localhost:5173",
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
     credentials: true
 }))
 app.use("/uploads", express.static("uploads"));
@@ -25,12 +26,12 @@ app.use("/api/messages", messageRoutes);
 
 app.get("/",(req,res)=>
     {
-        res.send("api created");
+        res.send("Bhalo-Basha API is running");
     })
-    
 
-if(connectDB()){
-app.listen(5002,()=>{
-    console.log("server connected at port 5002");
-})
-}
+
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+});
