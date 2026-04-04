@@ -10,8 +10,8 @@ import jwt from 'jsonwebtoken'
     res.cookie("jwt",token,{
         maxAge:15 * 24 * 60 * 60 * 1000, //15 days in miliseconds
         httpOnly: true, //prevent xss attacks
-        sameSite:"strict",
-        secure: process.env.NODE_ENV !== "development" 
+        sameSite:"none",
+        secure: true
     })
 
 };
