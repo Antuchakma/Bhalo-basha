@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../../../context/AuthContext";
-import axios from "../../lib/axios";
+import api from "../../lib/axios";
 import { motion } from "framer-motion";
 import { MapPin, Trash2, Plus, Home, Bed, Bath } from "lucide-react";
 import { Link, useNavigate } from "react-router";
@@ -24,11 +24,11 @@ function ProfilePage() {
   const [deleteId, setDeleteId] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  useEffect(() => {s
     if (!user) { navigate("/login"); return; }
     const fetchMyListings = async () => {
       try {
-        const res = await axios.get("/api/product/my-listings");
+        const res = await api.get("/api/product/my-listings");
         setMyListings(res.data.products);
       } catch (err) {
         setError("Failed to load your listings");

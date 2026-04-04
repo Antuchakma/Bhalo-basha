@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router";
-import axios from "../../lib/axios";
+import api from "../../lib/axios";
 import { motion } from "framer-motion";
 import { ArrowLeft, MapPin, Clock, Bed, Bath, Check, HomeIcon, Phone, MessageSquare, ChevronLeft, ChevronRight, Users, Home, CreditCard } from "lucide-react";
 import { AuthContext } from "../../../context/AuthContext";
@@ -38,7 +38,7 @@ function ProductPage() {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await axios.get(`/api/product/${id}`);
+        const res = await api.get(`/api/product/${id}`);
         setProduct(res.data);
       } catch (err) {
         setError("Failed to load product details.");

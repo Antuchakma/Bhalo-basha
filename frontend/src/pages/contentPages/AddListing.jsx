@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "../../lib/axios";
+import api from "../../lib/axios";
 import { useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
@@ -55,7 +55,7 @@ function AddListing() {
     });
 
     try {
-      await axios.post("/api/product", data, { headers: { "Content-Type": "multipart/form-data" } });
+      await api.post("/api/product", data, { headers: { "Content-Type": "multipart/form-data" } });
       toast.success("Listing created!");
       navigate("/listings");
     } catch (error) {

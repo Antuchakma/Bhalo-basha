@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import axios from "../../lib/axios";
+import api from "../../lib/axios";
 import { Link, useNavigate } from "react-router";
 import { AuthContext } from "../../../context/AuthContext.jsx";
 import Footer from "../../lib/Footer.jsx";
@@ -70,7 +70,7 @@ function ListingsPage() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get("/api/product/");
+        const res = await api.get("/api/product/");
         setProducts(res.data.products);
         setFilteredProducts(res.data.products);
       } catch (err) {

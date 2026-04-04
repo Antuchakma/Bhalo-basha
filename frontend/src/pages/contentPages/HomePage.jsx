@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import Footer from "../../lib/Footer.jsx";
 import { motion } from "framer-motion";
 import { Search, ShieldCheck, MessageCircle, ChevronDown, MapPin, Home, ArrowRight, Star, Users } from "lucide-react";
-import axios from "../../lib/axios";
+import api from "../../lib/axios";
 
 const HomePage = () => {
   const { user } = useContext(AuthContext);
@@ -20,7 +20,7 @@ const HomePage = () => {
   useEffect(() => {
     const fetchRecent = async () => {
       try {
-        const res = await axios.get("/api/product/");
+        const res = await api.get("/api/product/");
         setRecentListings((res.data.products || []).slice(0, 4));
       } catch (err) {
         // silently fail

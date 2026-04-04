@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../../context/AuthContext';
-import axios from '../../lib/axios';
+import api from '../../lib/axios';
 import { MessageSquare, Clock, Home, ArrowLeft } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { motion } from 'framer-motion';
@@ -34,7 +34,7 @@ function MessagesPage() {
 
     const fetchConversations = async () => {
       try {
-        const response = await axios.get('/api/messages/conversations');
+        const response = await api.get('/api/messages/conversations');
         setConversations(response.data);
         const counts = {};
         response.data.forEach(conv => {
